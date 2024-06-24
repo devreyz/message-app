@@ -1,7 +1,9 @@
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
+  LightTheme,
   DefaultTheme,
+  
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -62,7 +64,7 @@ function RootLayoutNav() {
           options={{
             headerShown: false,
             headerStyle: {
-              backgroundColor: colorScheme === "dark" ? "#1c181b" : "#cdcdcd",
+              backgroundColor: colorScheme === "dark" ? "#028072" : "#BAC4AD",
             },
             headerTitle: "",
 
