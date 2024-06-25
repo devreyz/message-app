@@ -7,12 +7,13 @@ import {
   FlatList,
   StyleSheet,
   Button,
-  ScrollViewProps
+  ScrollViewProps,
+  TouchableOpacity
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
-import colors from "tailwindcss/colors";
 import { getChat } from "@/utils/data/chats";
 import { MessageInput } from "@/components/ui/MessageInput";
+import { MessageItem } from "@/components/MessageItem";
 
 import { useColorScheme } from "nativewind";
 
@@ -30,19 +31,23 @@ const newMessage: MessageProps = {
 const chatId = "1";
 
 const ChatScreen = () => {
+    const colors = require('@/constants/colors.json');
+
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
   const { colorScheme, setColorScheme } = useColorScheme();
   const chat = getChat(id);
   const scrollViewRef = useRef<ScrollView>(null);
+  const flatListRef = useRef<FlatList>(null);
+  
 
   type handleScollProps = {
     animated: boolean;
   };
 
   const handleScrollToEnd = ({ animated }: handleScollProps) => {
-    if (scrollViewRef.current) {
-      scrollViewRef.current.scrollToEnd({ animated: animated });
+    if (flatListRef.current) {
+      flatListRef.current?.scrollToEnd({ animated: animated });
     }
   };
 
@@ -65,13 +70,13 @@ const ChatScreen = () => {
     <View className="flex-1 bg-light-background dark:bg-dark-background">
       <View className="flex-row items-center justify-between p-4 border-b border-light-surface dark:border-dark-surface gap-4 ">
         <View className="flex-row gap-x-3 items-center ">
-          <Text onPress={() => navigation.goBack()}>
+          <TouchableOpacity onPress={() => navigation.goBack()}>
             <Feather
               name="arrow-left"
               size={32}
-              color={colorScheme === "light" ? "#000000" : "#FFFFFF"}
+              color={colors[colorScheme].textSecondary}
             />
-          </Text>
+          </TouchableOpacity>
           <Image
             source={chat.avatar}
             className="w-12 h-12 rounded-full"
@@ -91,76 +96,25 @@ const ChatScreen = () => {
         <View className="">
           <Feather
             name="more-vertical"
-            color={colors.gray["600"]}
+            color={colors[colorScheme].textSecondary}
             size={32}
           />
         </View>
       </View>
 
-      <ScrollView
-        ref={scrollViewRef}
-        className="flex-1 p-4"
+      <FlatList
+        ref={flatListRef}
+        data={chat.messages}
+        renderItem={({ item }) => <MessageItem message={item} />}
+        keyExtractor={item => item.id}
         onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({ animated: true })
-        }>
-        {chat.messages.map(message => (
-          <View
-            key={message.id}
-            className={`flex-row items-start mb-4 ${
-              message.isUser ? "justify-end" : ""
-            }`}>
-            <View className="px-1">
-              <View
-                className={`max-w-xs p-2 rounded-2xl ${
-                  message.isUser
-                    ? "bg-light-userBg dark:bg-dark-userBg"
-                    : "bg-light-notUserBg dark:bg-dark-notUserBg"
-                }`}>
-                <Text
-                  className={`font-medium ${
-                    message.isUser
-                      ? "text-light-userText dark:text-dark-userText"
-                      : "text-light-notUserText dark:text-dark-notUserText"
-                  }`}>
-                  {message.text}
-                </Text>
-              </View>
-
-              <View
-                className={` flex-row mt-1 px-2  ${
-                  message.isUser ? "justify-end" : ""
-                }`}>
-                <Text className="text-xs text-light-textSecondary mr-1">
-                  {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
-                </Text>
-                {message.isUser && (
-                  <Feather
-                    name={
-                      message.status === "READ"
-                        ? "check-circle"
-                        : message.status === "DELIVERED"
-                        ? "check-circle"
-                        : message.status === "SENT"
-                        ? "check"
-                        : "clock"
-                    }
-                    size={14}
-                    color={
-                      message.status === "READ"
-                        ? colors.blue["600"]
-                        : message.status === "DELIVERED"
-                        ? colors.gray["300"]
-                        : message.status === "SENT"
-                        ? colors.gray["700"]
-                        : colors.gray["700"]
-                    }
-                  />
-                )}
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
+          flatListRef.current?.scrollToEnd({ animated: true })
+        }
+        initialNumToRender={20}
+        maxToRenderPerBatch={10}
+        windowSize={5}
+        contentContainerStyle={{ padding: 16 }}
+      />
       <MessageInput onSend={handleSend} />
     </View>
   );
