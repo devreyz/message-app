@@ -5,9 +5,6 @@ import {
   Text,
   Image,
   FlatList,
-  StyleSheet,
-  Button,
-  ScrollViewProps,
   TouchableOpacity
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
@@ -18,17 +15,8 @@ import { MessageItem } from "@/components/MessageItem";
 import { useColorScheme } from "nativewind";
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
-import { ChatProps, MessageProps } from "@/types/types";
 
-const newMessage: MessageProps = {
-  id: "5",
-  text: "Olá, como vai?",
-  isUser: true,
-  timestamp: new Date().toISOString(),
-  status: "SENT"
-};
 
-const chatId = "1";
 
 const ChatScreen = () => {
     const colors = require('@/constants/colors.json');
@@ -37,7 +25,6 @@ const ChatScreen = () => {
   const navigation = useNavigation();
   const { colorScheme, setColorScheme } = useColorScheme();
   const chat = getChat(id);
-  const scrollViewRef = useRef<ScrollView>(null);
   const flatListRef = useRef<FlatList>(null);
   
 

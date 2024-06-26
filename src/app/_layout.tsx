@@ -1,9 +1,12 @@
+import { drizzle } from "drizzle-orm/expo-sqlite";
+import { openDatabaseSync } from "expo-sqlite/next";
+import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
+import migrations from "../../drizzle/migrations";
+
 import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
-  LightTheme,
   DefaultTheme,
-  
   ThemeProvider,
 } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -11,9 +14,7 @@ import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "nativewind";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
 import "react-native-reanimated";
-import colors from "tailwindcss/colors";
 
 export {
   // Catch any errors thrown by the Layout component.
@@ -25,14 +26,16 @@ export const unstable_settings = {
   initialRouteName: "(tabs)",
 };
 
+const DATABASE_NAME = "database.db";
+const expoDB = openDatabaseSync(DATABASE_NAME);
+const db = drizzle(expoDB);
+
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
-    ...FontAwesome.font,
-  });
+  const { success, error } = useMigrations(db, migrations);
+
 
   // Expo Router uses Error Boundaries to catch errors in the navigation tree.
   useEffect(() => {
@@ -40,12 +43,12 @@ export default function RootLayout() {
   }, [error]);
 
   useEffect(() => {
-    if (loaded) {
+    if (success) {
       SplashScreen.hideAsync();
     }
-  }, [loaded]);
- 
-  if (!loaded) {
+  }, [success]);
+
+  if (!success) {
     return null;
   }
 
@@ -53,7 +56,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
