@@ -14,34 +14,26 @@ const ContactForm = () => {
   };
 
   return (
-    <View className="p-4 rounded-lg ">
-      <View className="mb-4">
-        <Text className="text-lg mb-2">Name</Text>
+    <View className="p-4 ">
+      <View className="mb-4 flex">
+        <Text className="text-lg mb-2">Nome</Text>
         <TextInput
-          className="border border-primary py-2 px-4 rounded-full"
+          className="border-b border-primary py-1 px-2 "
           value={name}
           onChangeText={setName}
         />
       </View>
+     
       <View className="mb-4">
-        <Text className="text-lg mb-2">Email</Text>
+        <Text className="text-lg mb-2">Numero</Text>
         <TextInput
-          className="border border-primary py-2 px-4 rounded-full"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-        />
-      </View>
-      <View className="mb-4">
-        <Text className="text-lg mb-2">Phone</Text>
-        <TextInput
-          className="border border-primary py-2 px-4 rounded-full"
+            className="border-b border-primary py-1 px-2 "
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
         />
       </View>
-      <Button title="Submit" onPress={handleSubmit} />
+      <Button title="Salvar" onPress={handleSubmit} />
     </View>
   );
 };

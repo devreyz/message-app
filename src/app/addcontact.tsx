@@ -1,6 +1,6 @@
 import ContactForm from '@/components/ContactForm';
 import { StatusBar } from 'expo-status-bar';
-import { Platform, StyleSheet,SafeAreaView,ScrollView } from 'react-native';
+import { Platform, SafeAreaView,ScrollView } from 'react-native';
 
 import { Text, View } from 'react-native';
 

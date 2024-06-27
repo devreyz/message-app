@@ -298,7 +298,7 @@ const CHATS = [
 type ChatProps = (typeof CHATS)[0];
 
 const getChat = (id: string | string[] | undefined) => {
-  console.log("Buscou");
+  console.log("Buscou mensagens do chat de ID: " + id);
   return CHATS.filter((item) => item.id === id)[0];
 };
 

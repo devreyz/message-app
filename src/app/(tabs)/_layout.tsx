@@ -1,46 +1,68 @@
-import React from 'react';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs } from 'expo-router';
-import { Pressable, Text, View } from 'react-native';
+import React from "react";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
+import { Tabs } from "expo-router";
+import { Text, View } from "react-native";
 
-import Colors from '@/constants/Colors';
-import { Feather } from '@expo/vector-icons';
+import { Feather } from "@expo/vector-icons";
+import { useColorScheme } from "nativewind";
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
-  name: React.ComponentProps<typeof FontAwesome>['name'];
+  name: React.ComponentProps<typeof Feather>["name"];
   color: string;
 }) {
-  return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
+  return <Feather size={28} style={{ marginBottom: -3 }} {...props} />;
 }
 
 export default function TabLayout() {
+  const colors = require("@/constants/colors.json");
 
+  const { colorScheme } = useColorScheme();
   return (
-    <Tabs
-      screenOptions={{
-        
-      }}>
+    <Tabs screenOptions={{}}>
       <Tabs.Screen
         name="index"
         options={{
           headerShown: true,
-          title: '',
-          headerLeft: () => <Text className='dark:text-white text-3xl'>MessageApp</Text>,
-          tabBarIcon: ({ color }) => (<View className='items-center'>
-            <TabBarIcon name="address-book" color={color} />
-            
-          </View>) ,
-          headerRight: () => (
-            <Feather name='more-vertical' />
+          tabBarShowLabel: false,
+          title: "",
+          headerLeft: () => (
+            <View className="flex-row items-center">
+              <Text className="dark:text-white text-2xl">MessageApp</Text>
+              <Feather name="message-circle" size={28} color={colors[colorScheme].primaryDark}/>
+            </View>
           ),
+          headerLeftContainerStyle: { paddingLeft: 10 },
+          headerRightContainerStyle: { paddingRight: 10 },
+
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+              name="message-square"
+              color={
+                focused
+                  ? colors[colorScheme].primary
+                  : colors[colorScheme].textDisabled
+              }
+            />
+          ),
+          headerRight: () => <Feather name="more-vertical" size={24} />,
         }}
       />
       <Tabs.Screen
         name="two"
         options={{
-          title: 'Tab Two',
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "ffdf",
+          tabBarIcon: ({ focused }) => (
+            <TabBarIcon
+              name="settings"
+              color={
+                focused
+                  ? colors[colorScheme].primary
+                  : colors[colorScheme].textDisabled
+              }
+            />
+          ),
+          tabBarShowLabel: false,
         }}
       />
     </Tabs>

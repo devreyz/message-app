@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { getChat } from "@/utils/data/chats";
-import { MessageInput } from "@/components/ui/MessageInput";
+import { MessageInput } from "@/components/MessageInput";
 import { MessageItem } from "@/components/MessageItem";
 
 import { useColorScheme } from "nativewind";
@@ -68,7 +68,7 @@ const ChatScreen = () => {
   };
   return (
     <View className="flex-1 bg-light-background dark:bg-dark-background">
-      <View className="flex-row items-center justify-between p-4 border-b border-light-surface dark:border-dark-surface gap-4 ">
+      <View className="flex-row items-center justify-between p-2 border-b border-light-surface dark:border-dark-surface gap-4 ">
         <View className="flex-row gap-x-3 items-center ">
           <TouchableOpacity onPress={() => navigation.goBack()}>
             <Feather
