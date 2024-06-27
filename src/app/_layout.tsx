@@ -1,19 +1,11 @@
-import { drizzle } from "drizzle-orm/expo-sqlite";
-import { openDatabaseSync } from "expo-sqlite/next";
-import { useMigrations } from "drizzle-orm/expo-sqlite/migrator";
-import migrations from "../../drizzle/migrations";
-
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import {
   DarkTheme,
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { useFonts } from "expo-font";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useColorScheme } from "nativewind";
-import { useEffect } from "react";
 import "react-native-reanimated";
 
 export {
@@ -26,31 +18,13 @@ export const unstable_settings = {
   initialRouteName: "(tabs)",
 };
 
-const DATABASE_NAME = "database.db";
-const expoDB = openDatabaseSync(DATABASE_NAME);
-const db = drizzle(expoDB);
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  const { success, error } = useMigrations(db, migrations);
-
-
-  // Expo Router uses Error Boundaries to catch errors in the navigation tree.
-  useEffect(() => {
-    if (error) throw error;
-  }, [error]);
-
-  useEffect(() => {
-    if (success) {
-      SplashScreen.hideAsync();
-    }
-  }, [success]);
-
-  if (!success) {
-    return null;
-  }
+  
+ 
 
   return <RootLayoutNav />;
 }
