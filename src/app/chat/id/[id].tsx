@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   ScrollView,
   View,
@@ -8,7 +8,8 @@ import {
   StyleSheet,
   Button,
   ScrollViewProps,
-  TouchableOpacity
+  TouchableOpacity,
+  Alert,
 } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { getChat } from "@/utils/data/chats";
@@ -19,27 +20,24 @@ import { useColorScheme } from "nativewind";
 
 import { useLocalSearchParams, useNavigation } from "expo-router";
 import { ChatProps, MessageProps } from "@/types/types";
+import { useMessageDatabase } from "@/database/useMessageDatabase";
 
 const newMessage: MessageProps = {
   id: "5",
   text: "Olá, como vai?",
   isUser: true,
   timestamp: new Date().toISOString(),
-  status: "SENT"
+  status: "SENT",
 };
 
-const chatId = "1";
-
 const ChatScreen = () => {
-    const colors = require('@/constants/colors.json');
-
+  const colors = require("@/constants/colors.json");
+  const messageDB = useMessageDatabase();
   const { id } = useLocalSearchParams();
   const navigation = useNavigation();
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
   const chat = getChat(id);
-  const scrollViewRef = useRef<ScrollView>(null);
   const flatListRef = useRef<FlatList>(null);
-  
 
   type handleScollProps = {
     animated: boolean;
@@ -53,18 +51,28 @@ const ChatScreen = () => {
 
   const handleUnreadMessages = () => {
     chat.messages
-      .filter(msg => msg.status === "UNREAD" && !msg.isUser)
-      .forEach(msg => (msg.status = "READ"));
+      .filter((msg) => msg.status === "UNREAD" && !msg.isUser)
+      .forEach((msg) => (msg.status = "READ"));
   };
+  const [messages, setMessages] = useState<MessageProps[]>([]);
 
   useEffect(() => {
-    handleScrollToEnd({ animated: false });
+     handleScrollToEnd({ animated: false });
+    messageDB.listByContact(id).then((messages) => setMessages(messages));
+
     handleUnreadMessages();
   }, []);
 
-  const handleSend = (message: String) => {
-    handleScrollToEnd({ animated: true });
-    alert(message);
+  const handleSend = (message: string) => {
+     handleScrollToEnd({ animated: true });
+    messageDB.create({
+      contact_id: Number(id),
+      isUser: 1,
+      status: "PENDING",
+      text: message,
+      timestamp: String(new Date().getTime()),
+    });
+    messageDB.listByContact(id).then((messages) => setMessages(messages));
   };
   return (
     <View className="flex-1 bg-light-background dark:bg-dark-background">
@@ -77,10 +85,7 @@ const ChatScreen = () => {
               color={colors[colorScheme].textSecondary}
             />
           </TouchableOpacity>
-          <Image
-            source={chat.avatar}
-            className="w-12 h-12 rounded-full"
-          />
+          <Image source={chat.avatar} className="w-12 h-12 rounded-full" />
           <View className="ml-4">
             <Text className="text-lg font-semibold text-light-textPrimary dark:text-dark-textPrimary">
               {chat.name}
@@ -104,15 +109,19 @@ const ChatScreen = () => {
 
       <FlatList
         ref={flatListRef}
-        data={chat.messages}
+        data={messages}
         renderItem={({ item }) => <MessageItem message={item} />}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         onContentSizeChange={() =>
           flatListRef.current?.scrollToEnd({ animated: true })
         }
-        initialNumToRender={20}
-        maxToRenderPerBatch={10}
-        windowSize={5}
+        initialNumToRender={50}
+        maxToRenderPerBatch={50}
+        onEndReached={() => console.log("New render End")}
+        onEndReachedThreshold={0.5}
+        onStartReached={() => console.log("New render Start")}
+        windowSize={100}
+        
         contentContainerStyle={{ padding: 16 }}
       />
       <MessageInput onSend={handleSend} />

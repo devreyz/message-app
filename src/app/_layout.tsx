@@ -1,3 +1,4 @@
+import { initializeDatabase } from "@/database/initializeDatabase";
 import {
   DarkTheme,
   DefaultTheme,
@@ -22,7 +23,7 @@ const DB_NAME = "database.db";
 
 export default function RootLayout() {
   return (
-    <SQLiteProvider databaseName={DB_NAME}>
+    <SQLiteProvider databaseName={DB_NAME} onInit={initializeDatabase}>
       <RootLayoutNav />
     </SQLiteProvider>
   );

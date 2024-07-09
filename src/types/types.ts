@@ -2,7 +2,7 @@
 export type MessageProps = {
   id: string;
   text: string;
-  isUser: boolean;
+  isUser: number;
   timestamp: string;
   status: "PENDING" | "SENT" | "DELIVERED" | "READ" | "UNREAD";
 };

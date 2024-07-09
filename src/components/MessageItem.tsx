@@ -7,23 +7,24 @@ export const MessageItem = ({ message }) => {
   
   const colors = require("@/constants/colors.json");
    const { colorScheme } = useColorScheme();
+
  
   return(
   <View
     key={message.id}
     className={`flex-row items-start mb-4 ${
-      message.isUser ? "justify-end" : ""
+      message.is_user ? "justify-end" : ""
     }`}>
     <View className="px-1">
       <View
         className={`max-w-xs p-2 rounded-2xl ${
-          message.isUser
+          message.is_user
             ? "bg-light-userBg dark:bg-dark-userBg rounded-br-sm"
             : "bg-light-notUserBg dark:bg-dark-notUserBg rounded-bl-sm"
         }`}>
         <Text
           className={`font-semibold ${
-            message.isUser
+            message.is_ser
               ? "text-light-userText dark:text-dark-userText"
               : "text-light-notUserText dark:text-dark-notUserText"
           }`}>
@@ -33,12 +34,12 @@ export const MessageItem = ({ message }) => {
 
       <View
         className={` flex-row mt-1 px-2  ${
-          message.isUser ? "justify-end" : ""
+          message.is_ser ? "justify-end" : ""
         }`}>
         <Text className="text-xs text-light-textSecondary mr-1">
           {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
         </Text>
-        {message.isUser && (
+        {message.is_ser && (
           <Feather
             name={
               message.status === "READ"
