@@ -30,7 +30,7 @@ export default function RootLayout() {
 }
 
 function RootLayoutNav() {
-  const { colorScheme, setColorScheme } = useColorScheme();
+  const { colorScheme } = useColorScheme();
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
