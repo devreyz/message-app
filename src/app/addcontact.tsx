@@ -1,9 +1,8 @@
 import ContactForm from '@/components/ContactForm';
 import { StatusBar } from 'expo-status-bar';
 import { Platform, SafeAreaView,ScrollView } from 'react-native';
-import { Platform, SafeAreaView,ScrollView } from 'react-native';
 
-import { Text,  } from 'react-native';
+import { Text  } from 'react-native';
 
 export default function AddContactScreen() {
   return (
