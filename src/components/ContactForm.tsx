@@ -25,18 +25,22 @@ const ContactForm = () => {
   return (
     <View className="p-4 ">
       <View className="mb-4 flex">
-        <Text className="text-lg mb-2">Nome</Text>
+        <Text className="text-lg mb-2 text-light-textPrimary dark:text-dark-textPrimary">
+          Nome
+        </Text>
         <TextInput
-          className="border-b border-primary py-1 px-2 "
+          className="border-b border-primary py-1 px-2  text-light-textPrimary dark:text-dark-textPrimary"
           value={name}
           onChangeText={setName}
         />
       </View>
 
       <View className="mb-4">
-        <Text className="text-lg mb-2">Numero</Text>
+        <Text className="text-lg mb-2  text-light-textPrimary dark:text-dark-textPrimary">
+          Numero
+        </Text>
         <TextInput
-          className="border-b border-primary py-1 px-2 "
+          className="border-b border-primary py-1 px-2  text-light-textPrimary dark:text-dark-textPrimary"
           value={phone}
           onChangeText={setPhone}
           keyboardType="phone-pad"
