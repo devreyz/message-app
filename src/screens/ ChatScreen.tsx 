@@ -1,0 +1,36 @@
+import React, { useState } from 'react';
+import { View, Button, FlatList, Image, Text } from 'react-native';
+import { MediaPicker } from '../components/Media/MediaPicker';
+import { MediaGalleryModal } from '../components/Media/MediaGalleryModal';
+
+export const ChatScreen = () => {
+  const [mediaUris, setMediaUris] = useState<string[]>([]);
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handleMediaSelected = (uri: string) => {
+    setMediaUris([...mediaUris, uri]);
+  };
+
+  return (
+    <View style={{ flex: 1, padding: 20 }}>
+      <MediaPicker onMediaSelected={handleMediaSelected} />
+
+      <FlatList
+        data={mediaUris}
+        horizontal
+        renderItem={({ item }) => (
+          <Image source={{ uri: item }} style={{ width: 100, height: 100, margin: 5 }} />
+        )}
+        keyExtractor={(item, index) => index.toString()}
+      />
+
+      <Button title="Abrir Galeria" onPress={() => setModalVisible(true)} />
+
+      <MediaGalleryModal
+        visible={modalVisible}
+        onClose={() => setModalVisible(false)}
+        mediaUris={mediaUris}
+      />
+    </View>
+  );
+};

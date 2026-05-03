@@ -1,0 +1,56 @@
+import React from 'react';
+import { Modal, View, Image, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
+import { Video } from 'expo-av';
+
+type MediaGalleryModalProps = {
+  visible: boolean;
+  onClose: () => void;
+  mediaUris: string[];
+};
+
+export const MediaGalleryModal: React.FC<MediaGalleryModalProps> = ({ visible, onClose, mediaUris }) => {
+  const renderItem = ({ item }: { item: string }) => {
+    const isVideo = item.endsWith('.mp4') || item.endsWith('.mov');
+    return (
+      <View style={styles.item}>
+        {isVideo ? (
+          <Video
+            source={{ uri: item }}
+            style={{ width: 200, height: 200 }}
+            useNativeControls
+            resizeMode="contain"
+          />
+        ) : (
+          <Image source={{ uri: item }} style={{ width: 200, height: 200 }} />
+        )}
+      </View>
+    );
+  };
+
+  return (
+    <Modal visible={visible} animationType="slide">
+      <View style={styles.container}>
+        <FlatList
+          data={mediaUris}
+          renderItem={renderItem}
+          keyExtractor={(item, index) => index.toString()}
+        />
+        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+          <Text style={{ color: '#fff' }}>Fechar</Text>
+        </TouchableOpacity>
+      </View>
+    </Modal>
+  );
+};
+
+const styles = StyleSheet.create({
+  container: { flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#000' },
+  item: { margin: 10 },
+  closeButton: {
+    backgroundColor: 'red',
+    padding: 15,
+    borderRadius: 10,
+    position: 'absolute',
+    bottom: 30,
+  },
+});
