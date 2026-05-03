@@ -1,135 +1,83 @@
-import React, { useRef } from "react";
-import { FlatList, View, Text } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { View, Text, StyleSheet } from "react-native";
+import { MessageProps } from "@/types/types";
 import { useColorScheme } from "nativewind";
 
-export const MessageItem = ({ message }) => {
-  
-  const colors = require("@/constants/colors.json");
-   const { colorScheme } = useColorScheme();
+export function MessageItem({ message }: { message: MessageProps }) {
+  const { colorScheme } = useColorScheme();
+  const isDark = colorScheme === 'dark';
+  const isUser = message.is_user === 1;
 
- 
-  return(
-  <View
-    key={message.id}
-    className={`flex-row items-start mb-4 ${
-      message.is_user ? "justify-end" : ""
-    }`}>
-    <View className="px-1">
+  // Cores dinâmicas baseadas no tema
+  const userBg = isDark ? '#005C4B' : '#DCF8C6';
+  const otherBg = isDark ? '#202C33' : '#FFFFFF';
+  const textColor = isDark ? '#FFF' : '#000';
+  const timeColor = isDark ? 'rgba(255, 255, 255, 0.5)' : 'rgba(0, 0, 0, 0.4)';
+
+  return (
+    <View style={[styles.container, isUser ? styles.userContainer : styles.otherContainer]}>
       <View
-        className={`max-w-xs p-2 rounded-2xl ${
-          message.is_user
-            ? "bg-light-userBg dark:bg-dark-userBg rounded-br-sm"
-            : "bg-light-notUserBg dark:bg-dark-notUserBg rounded-bl-sm"
-        }`}>
-        <Text
-          className={`font-semibold ${
-            message.is_ser
-              ? "text-light-userText dark:text-dark-userText"
-              : "text-light-notUserText dark:text-dark-notUserText"
-          }`}>
+        style={[
+          styles.bubble,
+          { backgroundColor: isUser ? userBg : otherBg },
+          isUser ? styles.userBubble : styles.otherBubble
+        ]}
+      >
+        <Text style={[styles.text, { color: textColor }]}>
           {message.text}
         </Text>
-      </View>
-
-      <View
-        className={` flex-row mt-1 px-2  ${
-          message.is_ser ? "justify-end" : ""
-        }`}>
-        <Text className="text-xs text-light-textSecondary mr-1">
-          {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
-        </Text>
-        {message.is_ser && (
-          <Feather
-            name={
-              message.status === "READ"
-                ? "check-circle"
-                : message.status === "DELIVERED"
-                ? "check-circle"
-                : message.status === "SENT"
-                ? "check"
-                : "clock"
-            }
-            size={14}
-            color={
-              message.status === "READ"
-                ? colors[colorScheme].success
-                : message.status === "DELIVERED"
-                ? colors[colorScheme].textDisabled
-                : message.status === "SENT"
-                ? colors[colorScheme].textDisabled
-                : colors[colorScheme].info
-            }
-          />
-        )}
+        <View style={styles.footer}>
+          <Text style={[styles.time, { color: timeColor }]}>12:45</Text>
+          {isUser && <Text style={styles.check}>✓✓</Text>}
+        </View>
       </View>
     </View>
-  </View>
-)}
+  );
+}
 
-/*
-      <ScrollView
-        ref={scrollViewRef}
-        className="flex-1 p-4"
-        onContentSizeChange={() =>
-          scrollViewRef.current?.scrollToEnd({ animated: true })
-        }>
-        {chat.messages.map(message => (
-          <View
-            key={message.id}
-            className={`flex-row items-start mb-4 ${
-              message.isUser ? "justify-end" : ""
-            }`}>
-            <View className="px-1">
-              <View
-                className={`max-w-xs p-2 rounded-2xl ${
-                  message.isUser
-                    ? "bg-light-userBg dark:bg-dark-userBg"
-                    : "bg-light-notUserBg dark:bg-dark-notUserBg"
-                }`}>
-                <Text
-                  className={`font-medium ${
-                    message.isUser
-                      ? "text-light-userText dark:text-dark-userText"
-                      : "text-light-notUserText dark:text-dark-notUserText"
-                  }`}>
-                  {message.text}
-                </Text>
-              </View>
-
-              <View
-                className={` flex-row mt-1 px-2  ${
-                  message.isUser ? "justify-end" : ""
-                }`}>
-                <Text className="text-xs text-light-textSecondary mr-1">
-                  {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
-                </Text>
-                {message.isUser && (
-                  <Feather
-                    name={
-                      message.status === "READ"
-                        ? "check-circle"
-                        : message.status === "DELIVERED"
-                        ? "check-circle"
-                        : message.status === "SENT"
-                        ? "check"
-                        : "clock"
-                    }
-                    size={14}
-                    color={
-                      message.status === "READ"
-                        ? colors.blue["600"]
-                        : message.status === "DELIVERED"
-                        ? colors.gray["300"]
-                        : message.status === "SENT"
-                        ? colors.gray["700"]
-                        : colors.gray["700"]
-                    }
-                  />
-                )}
-              </View>
-            </View>
-          </View>
-        ))}
-      </ScrollView>
-*/
+const styles = StyleSheet.create({
+  container: {
+    marginBottom: 8,
+    flexDirection: 'row',
+  },
+  userContainer: {
+    justifyContent: 'flex-end',
+  },
+  otherContainer: {
+    justifyContent: 'flex-start',
+  },
+  bubble: {
+    maxWidth: '85%',
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+    borderRadius: 15,
+    elevation: 1,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+  },
+  userBubble: {
+    borderTopRightRadius: 2,
+  },
+  otherBubble: {
+    borderTopLeftRadius: 2,
+  },
+  text: {
+    fontSize: 16,
+    lineHeight: 21,
+  },
+  footer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    marginTop: 2,
+  },
+  time: {
+    fontSize: 11,
+    marginRight: 4,
+  },
+  check: {
+    fontSize: 14,
+    color: '#53BDEB',
+  }
+});

@@ -1,140 +1,149 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, Image, FlatList, TouchableOpacity } from "react-native";
-import { Feather } from "@expo/vector-icons";
+import { View, FlatList, StyleSheet, KeyboardAvoidingView, Platform, ImageBackground, Text, useWindowDimensions } from "react-native";
+import { WhatsAppHeader } from "@/components/WhatsAppHeader";
 import { MessageInput } from "@/components/MessageInput";
 import { MessageItem } from "@/components/MessageItem";
 import { useColorScheme } from "nativewind";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { ChatProps, MessageProps } from "@/types/types";
+import { useLocalSearchParams } from "expo-router";
+import { MessageProps } from "@/types/types";
 import { useMessageDatabase } from "@/database/useMessageDatabase";
 import { useContactDatabase, ContactDatabaseProps } from "@/database/useContactDatabase";
+import { Feather } from "@expo/vector-icons";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-// Componente da tela de chat
 const ChatScreen = () => {
-  // Importa cores de um arquivo JSON
-  const colors = require("@/constants/colors.json");
-
-  // Obtém funções do banco de dados
   const messageDB = useMessageDatabase();
   const contactDB = useContactDatabase();
-
-  // Obtém parâmetros locais da URL
   const { id } = useLocalSearchParams();
-
-  // Obtém funções de navegação
-  const navigation = useNavigation();
-
-  // Obtém o esquema de cores (claro ou escuro)
+  const { height: screenHeight } = useWindowDimensions();
+  const insets = useSafeAreaInsets();
   const { colorScheme } = useColorScheme();
-
-  // Referência para a FlatList
+  const isDark = colorScheme === 'dark';
   const flatListRef = useRef<FlatList>(null);
 
-  // Definição das propriedades para a função de rolar até o fim da lista
-  type handleScollProps = {
-    animated: boolean;
-  };
-
-  // Função para rolar até o fim da lista
-  const handleScrollToEnd = ({ animated }: handleScollProps) => {
-    if (flatListRef.current) {
-      flatListRef.current?.scrollToEnd({ animated: animated });
-    }
-  };
-
-  // Estado para armazenar as mensagens e o contato
   const [messages, setMessages] = useState<MessageProps[]>([]);
   const [contact, setContact] = useState<ContactDatabaseProps | null>(null);
 
-  // UseEffect para carregar as mensagens e contato quando o componente é montado
+  // Aumento agressivo do offset para garantir que o teclado não cubra nada
+  const getKeyboardOffset = () => {
+    if (Platform.OS !== 'ios') return 0;
+    // Baseado na altura do cabeçalho customizado + safe area
+    return 0; 
+  };
+
+  const handleScrollToEnd = (animated = true) => {
+    setTimeout(() => {
+      flatListRef.current?.scrollToEnd({ animated });
+    }, 100);
+  };
+
+  const loadData = async () => {
+    const contactData = await contactDB.findById(Number(id));
+    setContact(contactData || null);
+    const messagesData = await messageDB.listByContact(Number(id));
+    setMessages(messagesData);
+  };
+
   useEffect(() => {
-    handleScrollToEnd({ animated: false });
-    
-    // Carregar informações do contato
-    contactDB.findById(Number(id)).then((data) => setContact(data || null));
-    
-    // Carregar mensagens
-    messageDB.listByContact(Number(id)).then((messages) => setMessages(messages));
+    loadData();
   }, [id]);
 
-  // Função para enviar uma mensagem
-  const handleSend = (message: string) => {
-    handleScrollToEnd({ animated: true });
-    messageDB.create({
+  const handleSend = async (message: string) => {
+    await messageDB.create({
       contact_id: Number(id),
-      isUser: 1,
-      status: "PENDING",
+      is_user: 1,
+      status: "SENT",
       text: message,
       timestamp: String(new Date().getTime()),
     });
-    messageDB.listByContact(Number(id)).then((messages) => setMessages(messages));
+    loadData();
+    handleScrollToEnd();
   };
 
+  const bgColor = isDark ? '#000' : '#E5DDD5';
+  const boxBg = isDark ? '#1C1C1E' : '#FFF';
+  const borderColor = isDark ? '#333' : '#EEE';
+
+  const EncryptionNotice = () => (
+    <View style={styles.encryptionContainer}>
+       <View style={[styles.encryptionBox, { backgroundColor: boxBg, borderColor: borderColor }]}>
+          <Text style={styles.encryptionText}>
+            <Feather name="lock" size={12} color="#D4AF37" /> As mensagens e ligações são protegidas com a criptografia de ponta a ponta. Somente as pessoas que fazem parte da conversa podem ler, ouvir e compartilhar esse conteúdo. <Text style={{ color: '#D4AF37' }}>Saiba mais</Text>
+          </Text>
+       </View>
+       <View style={[styles.dateHeader, { backgroundColor: boxBg }]}>
+          <Text style={styles.dateText}>Hoje</Text>
+       </View>
+    </View>
+  );
+
   return (
-    <View className="flex-1 bg-light-background dark:bg-dark-background">
-      {/* Cabeçalho da tela de chat */}
-      <View className="flex-row items-center justify-between p-2 border-b border-light-surface dark:border-dark-surface gap-4 ">
-        <View className="flex-row gap-x-3 items-center ">
-          {/* Botão para voltar */}
-          <TouchableOpacity onPress={() => navigation.goBack()}>
-            <Feather
-              name="arrow-left"
-              size={32}
-              color={colors[colorScheme].textSecondary}
-            />
-          </TouchableOpacity>
-          {/* Imagem do usuário */}
-          <Image
-            source={contact?.avatar ? { uri: contact.avatar } : require("@/assets/images/user.png")}
-            className="w-12 h-12 rounded-full"
-          />
-          <View className="ml-4">
-            <Text className="text-lg font-semibold text-light-textPrimary dark:text-dark-textPrimary">
-              {/* Nome do usuário */}
-              {contact?.name || "Carregando..."}
-            </Text>
-            <View className="flex-row items-center">
-              <View className="w-3 h-3 rounded-full bg-light-online dark:bg-dark-online mr-2"></View>
-              <Text className="text-light-textSecondary dark:text-dark-textSecondary">
-                Online
-              </Text>
-            </View>
-          </View>
-        </View>
-        {/* Botão de mais opções */}
-        <View className="">
-          <Feather
-            name="more-vertical"
-            color={colors[colorScheme].textSecondary}
-            size={32}
-          />
-        </View>
-      </View>
+    <View style={[styles.container, { backgroundColor: isDark ? '#000' : '#E5DDD5' }]}>
+      <WhatsAppHeader 
+        title={contact?.name || "Carregando..."} 
+        avatar={contact?.avatar} 
+        isChat={true} 
+      />
 
-      {/* Lista de mensagens */}
-      {messages && (
-        <FlatList
-          ref={flatListRef}
-          data={messages}
-          renderItem={({ item }) => <MessageItem message={item} />}
-          keyExtractor={(item) => item.id}
-          onContentSizeChange={() =>
-            flatListRef.current?.scrollToEnd({ animated: true })
-          }
-          initialNumToRender={50}
-          maxToRenderPerBatch={50}
-          onEndReached={() => console.log("New render End")}
-          onEndReachedThreshold={0.5}
-          onStartReached={() => console.log("New render Start")}
-          windowSize={100}
-          contentContainerStyle={{ padding: 16 }}
-        />
-      )}
-
-      {/* Componente de input de mensagem */}
-      <MessageInput onSend={handleSend} />
+      <KeyboardAvoidingView 
+        style={{ flex: 1 }} 
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+        keyboardVerticalOffset={getKeyboardOffset()}
+      >
+        <ImageBackground 
+          source={require("@/assets/images/chat_bg.png")} 
+          style={styles.bg}
+          imageStyle={{ opacity: isDark ? 0.15 : 0.05 }}
+        >
+          <FlatList
+            ref={flatListRef}
+            data={messages}
+            ListHeaderComponent={EncryptionNotice}
+            renderItem={({ item }) => <MessageItem message={item} />}
+            keyExtractor={(item) => item.id.toString()}
+            contentContainerStyle={{ padding: 16, paddingBottom: 10 }}
+            onContentSizeChange={() => handleScrollToEnd()}
+          />
+        </ImageBackground>
+        
+        {/* Agora o input está fora do fundo, garantindo que o teclado o empurre corretamente */}
+        <MessageInput onSend={handleSend} />
+      </KeyboardAvoidingView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1 },
+  bg: { flex: 1 },
+  encryptionContainer: {
+    alignItems: 'center',
+    marginVertical: 10,
+    paddingHorizontal: 20,
+  },
+  encryptionBox: {
+    padding: 12,
+    borderRadius: 12,
+    borderWidth: 0.5,
+    marginBottom: 20,
+  },
+  encryptionText: {
+    color: '#D4AF37',
+    fontSize: 12,
+    textAlign: 'center',
+    lineHeight: 18,
+  },
+  dateHeader: {
+    paddingHorizontal: 15,
+    paddingVertical: 5,
+    borderRadius: 8,
+    marginBottom: 10,
+  },
+  dateText: {
+    color: '#888',
+    fontSize: 12,
+    fontWeight: '600',
+  }
+});
 
 export default ChatScreen;

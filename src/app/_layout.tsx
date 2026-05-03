@@ -1,3 +1,4 @@
+import "../styles/global.css";
 import { initializeDatabase } from "@/database/initializeDatabase";
 import {
   DarkTheme,
@@ -8,16 +9,6 @@ import { Stack } from "expo-router";
 import { SQLiteProvider } from "expo-sqlite";
 import { useColorScheme } from "nativewind";
 import "react-native-reanimated";
-
-export {
-  // Catch any errors thrown by the Layout component.
-  ErrorBoundary,
-} from "expo-router";
-
-export const unstable_settings = {
-  // Ensure that reloading on `/modal` keeps a back button present.
-  initialRouteName: "(tabs)",
-};
 
 const DB_NAME = "database.db";
 
@@ -34,24 +25,25 @@ function RootLayoutNav() {
 
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="welcome" />
         <Stack.Screen
           name="chat"
           options={{
-            headerShown: false,
             headerStyle: {
-              backgroundColor: colorScheme === "dark" ? "#028072" : "#BAC4AD",
+              backgroundColor: colorScheme === "dark" ? "#000000" : "#FFFFFF",
             },
-            headerTitle: "",
-
             presentation: "fullScreenModal",
             animation: "fade_from_bottom",
           }}
         />
         <Stack.Screen
           name="addcontact"
-          options={{ presentation: "formSheet" }}
+          options={{ 
+            presentation: "formSheet",
+            headerShown: false,
+          }}
         />
       </Stack>
     </ThemeProvider>

@@ -1,8 +1,9 @@
 // types.ts
 export type MessageProps = {
   id: number;
+  contact_id: number;
   text: string;
-  isUser: number;
+  is_user: number;
   timestamp: string;
   status: "PENDING" | "SENT" | "DELIVERED" | "READ" | "UNREAD";
 };
