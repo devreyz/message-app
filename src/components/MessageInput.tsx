@@ -3,7 +3,11 @@ import { View, TextInput, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 
-export const MessageInput = ({ onSend }) => {
+type MessageInputProps = {
+  onSend: (message: string) => void;
+};
+
+export const MessageInput = ({ onSend }: MessageInputProps) => {
   const colors = require("@/constants/colors.json");
   const [message, setMessage] = useState("");
   const { colorScheme } = useColorScheme();

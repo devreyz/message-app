@@ -5,7 +5,7 @@ export type MessageDatabaseProps = {
   id: string;
   contact_id: number;
   text: string;
-  isUser: number;
+  is_user: number;
   timestamp: string;
   status: "PENDING" | "SENT" | "DELIVERED" | "READ" | "UNREAD";
 };
@@ -15,14 +15,13 @@ export function useMessageDatabase() {
 
   async function create(data: Omit<MessageDatabaseProps, "id">) {
     const statement = await database.prepareAsync(
-      "INSERT INTO messages (id, contact_id, text, is_user, timestamp, status) VALUES ($id, $contact_id, $text, $isUser, $timestamp, $status)"
+      "INSERT INTO messages (contact_id, text, is_user, timestamp, status) VALUES ($contact_id, $text, $is_user, $timestamp, $status)"
     );
     try {
       await statement.executeAsync({
-        
         $contact_id: data.contact_id,
         $text: data.text,
-        $isUser: data.isUser,
+        $is_user: data.is_user,
         $timestamp: data.timestamp,
         $status: data.status,
       });

@@ -8,13 +8,16 @@ import {
 
 import { Feather } from "@expo/vector-icons";
 import { forwardRef } from "react";
+import { ChatProps } from "@/types/types";
 
-// const unReadCount = (chat) => {
-//   const unreadNumber = 0;
-//   chat.unread = chat.messages.filter((msg) => msg.status === "UNREAD").length;
-//   return chat.unread;
-// };
-
+export type ChatItemProps = TouchableOpacityProps & {
+  chat: {
+    id: string;
+    name: string;
+    avatar?: any;
+    unread: number;
+  };
+};
 
 export const ChatItem = forwardRef<TouchableOpacity, ChatItemProps>(
   ({ chat, ...props }, ref) => (

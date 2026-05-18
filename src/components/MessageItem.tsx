@@ -2,8 +2,13 @@ import React, { useRef } from "react";
 import { FlatList, View, Text } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
+import { MessageProps } from "@/types/types";
 
-export const MessageItem = ({ message }) => {
+type MessageItemProps = {
+  message: MessageProps;
+};
+
+export const MessageItem = ({ message }: MessageItemProps) => {
   
   const colors = require("@/constants/colors.json");
    const { colorScheme } = useColorScheme();
@@ -24,7 +29,7 @@ export const MessageItem = ({ message }) => {
         }`}>
         <Text
           className={`font-semibold ${
-            message.is_ser
+            message.is_user
               ? "text-light-userText dark:text-dark-userText"
               : "text-light-notUserText dark:text-dark-notUserText"
           }`}>
@@ -34,12 +39,12 @@ export const MessageItem = ({ message }) => {
 
       <View
         className={` flex-row mt-1 px-2  ${
-          message.is_ser ? "justify-end" : ""
+          message.is_user ? "justify-end" : ""
         }`}>
         <Text className="text-xs text-light-textSecondary mr-1">
           {new Date(message.timestamp).toLocaleTimeString().slice(0, 5)}
         </Text>
-        {message.is_ser && (
+        {message.is_user && (
           <Feather
             name={
               message.status === "READ"

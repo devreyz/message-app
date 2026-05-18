@@ -50,16 +50,17 @@ const ChatScreen = () => {
   }, []);
 
   // Função para enviar uma mensagem
-  const handleSend = (message: string) => {
+  const handleSend = async (message: string) => {
     handleScrollToEnd({ animated: true });
-    messageDB.create({
+    await messageDB.create({
       contact_id: Number(id),
-      isUser: 1,
+      is_user: 1,
       status: "PENDING",
       text: message,
       timestamp: String(new Date().getTime()),
     });
-    messageDB.listByContact(Number(id)).then((messages) => setMessages(messages));
+    const messages = await messageDB.listByContact(Number(id));
+    setMessages(messages);
   };
 
   return (
