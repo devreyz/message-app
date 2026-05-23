@@ -1,10 +1,10 @@
 import React from "react";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
 import { Tabs } from "expo-router";
 import { Text, View } from "react-native";
-
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
+
+const colors = require("@/constants/colors.json");
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -15,8 +15,6 @@ function TabBarIcon(props: {
 }
 
 export default function TabLayout() {
-  const colors = require("@/constants/colors.json");
-
   const { colorScheme } = useColorScheme();
   return (
     <Tabs screenOptions={{}}>
@@ -29,7 +27,7 @@ export default function TabLayout() {
           headerLeft: () => (
             <View className="flex-row items-center">
               <Text className="dark:text-white text-2xl">MessageApp</Text>
-              <Feather name="message-circle" size={28} color={colors[colorScheme].primaryDark}/>
+              <Feather name="message-circle" size={28} color={colors[colorScheme ?? "light"].primaryDark}/>
             </View>
           ),
           headerLeftContainerStyle: { paddingLeft: 10 },
@@ -40,8 +38,8 @@ export default function TabLayout() {
               name="message-square"
               color={
                 focused
-                  ? colors[colorScheme].primary
-                  : colors[colorScheme].textDisabled
+                  ? colors[colorScheme ?? "light"].primary
+                  : colors[colorScheme ?? "light"].textDisabled
               }
             />
           ),
@@ -57,8 +55,8 @@ export default function TabLayout() {
               name="settings"
               color={
                 focused
-                  ? colors[colorScheme].primary
-                  : colors[colorScheme].textDisabled
+                  ? colors[colorScheme ?? "light"].primary
+                  : colors[colorScheme ?? "light"].textDisabled
               }
             />
           ),

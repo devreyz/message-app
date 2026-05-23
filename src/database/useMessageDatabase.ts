@@ -29,17 +29,7 @@ export function useMessageDatabase() {
     } catch (error) {
       throw error;
     } finally {
-      statement.finalizeAsync();
-    }
-  }
-
-  async function listAll() {
-    try {
-      const query = "SELECT * FROM messages";
-      const response = await database.getAllAsync<MessageDatabaseProps>(query);
-      return response;
-    } catch (error) {
-      throw error;
+      await statement.finalizeAsync();
     }
   }
 
@@ -66,11 +56,11 @@ export function useMessageDatabase() {
     } catch (error) {
       throw error;
     } finally {
-      statement.finalizeAsync();
+      await statement.finalizeAsync();
     }
   }
 
-  async function updateStatus(id: string, status: string) {
+  async function updateStatus(id: string, status: MessageDatabaseProps["status"]) {
     const statement = await database.prepareAsync(
       "UPDATE messages SET status = $status WHERE id = $id"
     );
@@ -80,13 +70,12 @@ export function useMessageDatabase() {
     } catch (error) {
       throw error;
     } finally {
-      statement.finalizeAsync();
+      await statement.finalizeAsync();
     }
   }
 
   return {
     create,
-    listAll,
     listByContact,
     remove,
     updateStatus,

@@ -1,7 +1,7 @@
 import { useSQLiteContext } from "expo-sqlite";
 
 export type ContactDatabaseProps = {
-  id: string;
+  id: number;
   name: string;
   phone: number;
   avatar: string;
@@ -14,7 +14,6 @@ export function useContactDatabase() {
   async function create(
     data: Omit<ContactDatabaseProps, "id" | "avatar" | "unread">
   ) {
-    
     const statement = await database.prepareAsync(
       "INSERT INTO contacts (name, phone) VALUES ($name, $phone)"
     );
@@ -32,24 +31,46 @@ export function useContactDatabase() {
     } catch (error) {
       throw error;
     } finally {
-      
+      await statement.finalizeAsync();
     }
   }
 
   async function listAll() {
+    const query = "SELECT * FROM contacts";
+    return database.getAllAsync<ContactDatabaseProps>(query);
+  }
+
+  async function getById(id: number) {
     try {
-      const query = "SELECT * FROM  contacts";
-      const response = await database.getAllAsync<ContactDatabaseProps>(query);
+      const query = "SELECT * FROM contacts WHERE id = ?";
+      const response = await database.getFirstAsync<ContactDatabaseProps>(
+        query,
+        id
+      );
 
       return response;
     } catch (error) {
-      console.log(error);
-    } finally {
+      throw error;
     }
   }
+
+  async function markAsRead(id: number) {
+    const statement = await database.prepareAsync(
+      "UPDATE contacts SET unread = 0 WHERE id = $id"
+    );
+    try {
+      await statement.executeAsync({ $id: id });
+      return { success: true };
+    } catch (error) {
+      throw error;
+    } finally {
+      await statement.finalizeAsync();
+    }
+  }
+
   async function listByName(name: string) {
     try {
-      const query = "SELECT * FROM  contacts WHERE name LIKE ?";
+      const query = "SELECT * FROM contacts WHERE name LIKE ?";
       const response = await database.getAllAsync<ContactDatabaseProps>(
         query,
         `%${name}%`
@@ -64,6 +85,8 @@ export function useContactDatabase() {
   return {
     create,
     listAll,
+    getById,
+    markAsRead,
     listByName,
   };
 }

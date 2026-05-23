@@ -2,9 +2,10 @@ import { View, Text, TouchableOpacity } from "react-native";
 import { useColorScheme } from "nativewind";
 import { Feather } from "@expo/vector-icons";
 
+const colors = require("@/constants/colors.json");
+
 export default function TabTwoScreen() {
   const { colorScheme, setColorScheme } = useColorScheme();
-  const colors = require("@/constants/colors.json")
 
   return (
     <View>
@@ -21,7 +22,7 @@ export default function TabTwoScreen() {
         <Feather
           name={`${colorScheme === "light" ? "moon" : "sun"}`}
           size={24}
-          color={`${colors[colorScheme].textPrimary}`}
+          color={`${colors[colorScheme ?? "light"].textPrimary}`}
         />
       </TouchableOpacity>
     </View>

@@ -3,12 +3,14 @@ import { View, TextInput, TouchableOpacity } from "react-native";
 import { Feather } from "@expo/vector-icons";
 import { useColorScheme } from "nativewind";
 
+const colors = require("@/constants/colors.json");
+
 type MessageInputProps = {
   onSend: (message: string) => void;
 };
 
 export const MessageInput = ({ onSend }: MessageInputProps) => {
-  const colors = require("@/constants/colors.json");
+
   const [message, setMessage] = useState("");
   const { colorScheme } = useColorScheme();
   const handleSend = () => {
@@ -24,7 +26,7 @@ export const MessageInput = ({ onSend }: MessageInputProps) => {
         <Feather
           name="smile"
           size={32}
-          color={colors[colorScheme].textSecondary}
+          color={colors[colorScheme ?? "light"].textSecondary}
         />
         <TextInput
           className="flex-1 px-2 font-medium text-lg max-h-48 text-light-textPrimary dark:text-dark-textPrimary"
@@ -32,7 +34,7 @@ export const MessageInput = ({ onSend }: MessageInputProps) => {
           value={message}
           editable
           multiline
-          placeholderTextColor={colors[colorScheme].textSecondary}
+          placeholderTextColor={colors[colorScheme ?? "light"].textSecondary}
           onChangeText={setMessage}
         />
       </View>
@@ -42,7 +44,7 @@ export const MessageInput = ({ onSend }: MessageInputProps) => {
         <Feather
           name="send"
           size={32}
-          color={colors[colorScheme].onPrimary}
+          color={colors[colorScheme ?? "light"].onPrimary}
         />
       </TouchableOpacity>
     </View>

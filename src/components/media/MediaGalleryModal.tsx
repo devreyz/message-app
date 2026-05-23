@@ -1,6 +1,6 @@
 import React from 'react';
 import { Modal, View, Image, FlatList, TouchableOpacity, Text, StyleSheet } from 'react-native';
-import { Video } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av';
 
 type MediaGalleryModalProps = {
   visible: boolean;
@@ -18,7 +18,7 @@ export const MediaGalleryModal: React.FC<MediaGalleryModalProps> = ({ visible, o
             source={{ uri: item }}
             style={{ width: 200, height: 200 }}
             useNativeControls
-            resizeMode="contain"
+            resizeMode={ResizeMode.CONTAIN}
           />
         ) : (
           <Image source={{ uri: item }} style={{ width: 200, height: 200 }} />
